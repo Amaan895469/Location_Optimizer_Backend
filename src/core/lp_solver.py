@@ -33,7 +33,7 @@ def solve_p_median(f: List[float], c: List[List[float]], p_val: int) -> Tuple[Li
     if status != 'Optimal':
         return [], float('inf'), status
 
-    # Extract results
+    
     result = [p.value(y[j]) > 0.5 for j in range(n_f)]
     cost = evaluate_solution_cost(f, c, result)
 
