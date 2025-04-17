@@ -10,7 +10,7 @@ from uuid import uuid4
 from threading import Thread
 from flask_cors import CORS
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:5173", "http://localhost:3000"])
+CORS(app, origins=["http://localhost:5173", "http://localhost:3000", "https://or-frontend-amber.vercel.app"])
 from math import radians, cos, sin, sqrt, atan2
 
 def haversine(lat1, lon1, lat2, lon2):
