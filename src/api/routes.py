@@ -12,12 +12,14 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from math import radians, cos, sin, sqrt, atan2
 
+app = Flask(__name__)
 load_dotenv()
+
 
 allowed_origins = os.environ.get('ALLOWED_ORIGINS', '')
 origins = allowed_origins.split(',') if allowed_origins else []
-
 CORS(app, origins=origins)
+
 def haversine(lat1, lon1, lat2, lon2):
     R = 6371  # km
     dlat, dlon = radians(lat2 - lat1), radians(lon2 - lon1)
