@@ -9,10 +9,15 @@ from src.core.ga_solver import solve_ga_route
 from uuid import uuid4
 from threading import Thread
 from flask_cors import CORS
-app = Flask(__name__)
-CORS(app, origins=["http://localhost:5173", "http://localhost:3000", "https://or-frontend-amber.vercel.app"])
+from dotenv import load_dotenv
 from math import radians, cos, sin, sqrt, atan2
 
+load_dotenv()
+
+allowed_origins = os.environ.get('ALLOWED_ORIGINS', '')
+origins = allowed_origins.split(',') if allowed_origins else []
+
+CORS(app, origins=origins)
 def haversine(lat1, lon1, lat2, lon2):
     R = 6371  # km
     dlat, dlon = radians(lat2 - lat1), radians(lon2 - lon1)
