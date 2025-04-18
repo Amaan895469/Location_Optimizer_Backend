@@ -1,24 +1,122 @@
-# Operations_Research_Project
-A company must locate deposits on the national territory.
-Deposits must cover the entire national territory. Considering an Italian population of about 60 
-million inhabitants, each deposit cannot serve more than 5 million people.
-Given this generic scenario (but any other territory can be chosen), the work involves:
-1) Identify a company and a real application scenario, adhering to the general scenario for 
-which to decline the project.
-2) Describe in detail the identified scenario.
-3) Design and implement a mathematical programming model capable of solving the given 
-problem or its simplification.
-4) Develop a heuristic approach to the problem.
-5) Develop a meta-heuristic approach to the problem.
-6) Create several instances to test the developed approaches.
-7) Carry out computational tests starting from the identified test cases.
-8) Comment the results.
-9) The report describing the work done cannot exceed 10 pages.
-The project is considered sufficient even if all the required approaches are not implemented. 
-To aim for the highest grade, however, it is necessary to implement an exact approach, a heuristic 
-approach and a meta-heuristic approach, using both Excel and/or Python for the various 
-techniques
+🧠 Location Optimizer Backend (Flask API)
+This is the Flask backend for the Location Optimization Tool, a geospatial decision support system. It provides RESTful APIs to solve:
 
-1)Heuristics
-2)P-median 
-3)Genetic Algorithm
+The P-Median problem for facility location optimization
+The Traveling Salesman Problem (TSP) using a Genetic Algorithm (GA)
+
+The backend is designed to work with the React frontend deployed here and supports both synchronous and asynchronous operations.
+⚙️ Tech Stack
+
+Flask for API framework
+PuLP for solving the P-Median Linear Program
+NumPy, Pandas for computation
+Gunicorn for production serving
+Flask-CORS for cross-origin communication
+dotenv for environment configuration
+
+🚀 Deployment (Render)
+Backend: https://operations-research-project.onrender.com
+
+📡 API Endpoints
+🏭 POST /solve/p-median-coords
+Solves the P-Median problem for selecting p facility locations given:
+
+A list of coordinates
+Fixed facility costs
+Value of p
+
+Request Body:
+json{
+  "coordinates": [[lat1, lon1], [lat2, lon2], ...],
+  "fixed_costs": [100, 200, 150, ...],
+  "p_val": 3
+}
+Response:
+json{
+  "selected_facilities": [false, true, false, true],
+  "total_cost": 374.52,
+  "status": "Optimal"
+}
+🧠 Logic:
+
+Computes all pairwise distances using the Haversine formula.
+Solves a Mixed-Integer Linear Program using PuLP.
+
+⚠️ Limitations:
+
+Assumes all points can be clients and candidate facilities.
+Returns [] and inf if LP is infeasible or not optimal.
+
+🧬 POST /solve/ga
+Starts an asynchronous Genetic Algorithm to solve a TSP over the provided coordinates.
+Request Body:
+json{
+  "coordinates": [[lat1, lon1], [lat2, lon2], ...],
+  "generations": 1000,
+  "pop_size": 200,
+  "elite_size": 10,
+  "mutation_rate": 0.01
+}
+Response (immediate):
+json{
+  "job_id": "abcd-1234"
+}
+Then poll using:
+⏳ GET /check-status/<job_id>
+Response:
+json{
+  "status": "completed",
+  "result": {
+    "route_indices": [1, 4, 3, 2, 1],
+    "route": [[...], [...], ...],
+    "total_distance": 123.45,
+    "computation_time": 2.34,
+    "status": "success",
+    "log": [
+      {"generation": 1, "best_distance": 700.3},
+      ...
+    ]
+  }
+}
+🧠 GA Logic:
+
+Uses real-world distance via Haversine distance between lat/lon.
+Implements selection, crossover (OX/CX), and mutation (swap/inversion).
+Logs progress over generations.
+
+⚠️ Limitations:
+
+No persistent storage: results vanish after app restarts.
+Route indices assume original coordinate order.
+Stochastic: may produce different solutions across runs.
+
+🧪 Local Setup
+1. Clone & Install
+bashgit clone https://github.com/your-username/location-optimizer-backend.git
+cd location-optimizer-backend
+pip install -r requirements.txt
+2. Configure Environment
+Create a .env file:
+iniFLASK_ENV=development
+ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
+3. Run Locally
+bashpython -m src.api.routes
+Or for production:
+bashgunicorn src.api.routes:app
+🧾 File Structure
+├── src/
+│   ├── api/
+│   │   └── routes.py        # Main Flask routes & job manager
+│   └── core/
+│       ├── lp_solver.py     # P-Median optimizer using PuLP
+│       └── ga_solver.py     # TSP optimizer using Genetic Algorithm
+├── requirements.txt
+└── .env
+📌 Requirements
+flask>=2.0.0
+flask-cors>=3.0.10
+pulp>=2.0.0
+numpy>=1.19.0
+pandas>=1.0.0
+gunicorn==21.2.0
+python-dotenv
